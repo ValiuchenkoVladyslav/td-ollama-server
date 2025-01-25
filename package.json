@@ -13,12 +13,13 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@fastify/static": "^8.0.4",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.0",
     "@nestjs/core": "^11.0.1",
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/passport": "^11.0.5",
-    "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/platform-fastify": "^11.0.5",
     "@nestjs/swagger": "^11.0.3",
     "@prisma/client": "^6.1.0",
     "argon2": "^0.41.1",
