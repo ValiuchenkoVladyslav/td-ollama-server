@@ -14,6 +14,7 @@ function setupSwagger(app: NestFastifyApplication) {
   const config = new DocumentBuilder()
     .setTitle('TD-OLLAMA API')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
 
   const options: SwaggerDocumentOptions = {
