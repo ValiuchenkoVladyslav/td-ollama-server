@@ -33,6 +33,9 @@ async function bootstrap() {
     new FastifyAdapter(),
   );
 
+  app.setGlobalPrefix('api');
+  app.enableCors();
+
   setupSwagger(app);
 
   await app.listen(process.env.PORT ?? 3000);
