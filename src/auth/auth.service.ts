@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import * as argon from 'argon2';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '~/prisma/prisma.service';
 
 import { AuthDto, TokensDto } from './dtos';
 import { JwtPayload } from './types';
@@ -59,7 +59,7 @@ export class AuthService {
     return tokens;
   }
 
-  async logout(userId: number): Promise<boolean> {
+  async logout(userId: number) {
     await this.prisma.user.updateMany({
       where: {
         id: userId,
@@ -71,7 +71,6 @@ export class AuthService {
         hashedRt: null,
       },
     });
-    return true;
   }
 
   async refreshTokens(userId: number, rt: string): Promise<TokensDto> {
@@ -91,7 +90,7 @@ export class AuthService {
     return tokens;
   }
 
-  async updateRtHash(userId: number, rt: string): Promise<void> {
+  async updateRtHash(userId: number, rt: string) {
     const hash = await argon.hash(rt);
     await this.prisma.user.update({
       where: {
