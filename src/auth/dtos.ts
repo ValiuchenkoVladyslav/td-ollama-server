@@ -1,20 +1,22 @@
+import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { IsEmail, MinLength } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
 
+@InputType()
 export class AuthDto {
-  @ApiProperty()
+  @Field(() => String, { description: 'User email' })
   @IsEmail()
   email: string;
 
-  @ApiProperty()
+  @Field(() => String, { description: 'User password' })
   @MinLength(8)
   password: string;
 }
 
+@ObjectType()
 export class TokensDto {
-  @ApiProperty()
+  @Field(() => String, { description: 'JWT Acess token' })
   access_token: string;
 
-  @ApiProperty()
+  @Field(() => String, { description: 'JWT Refresh token' })
   refresh_token: string;
 }

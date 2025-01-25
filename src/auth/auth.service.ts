@@ -1,19 +1,18 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import * as argon from 'argon2';
 import { PrismaService } from '~/prisma/prisma.service';
+import { appConfig } from '~/app.config';
 
 import { AuthDto, TokensDto } from './dtos';
-import { JwtPayload } from './types';
+import { JwtPayload, JwtPayloadWithRt } from './types';
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
-    private config: ConfigService,
   ) {}
 
   async signupLocal(dto: AuthDto): Promise<TokensDto> {
@@ -35,7 +34,7 @@ export class AuthService {
         throw error;
       });
 
-    const tokens = await this.getTokens(user.id, user.email);
+    const tokens = await this.getTokens(user.id);
     await this.updateRtHash(user.id, tokens.refresh_token);
 
     return tokens;
@@ -53,7 +52,7 @@ export class AuthService {
     const passwordMatches = await argon.verify(user.hash, dto.password);
     if (!passwordMatches) throw new ForbiddenException('Access Denied');
 
-    const tokens = await this.getTokens(user.id, user.email);
+    const tokens = await this.getTokens(user.id);
     await this.updateRtHash(user.id, tokens.refresh_token);
 
     return tokens;
@@ -73,7 +72,10 @@ export class AuthService {
     });
   }
 
-  async refreshTokens(userId: number, rt: string): Promise<TokensDto> {
+  async refreshTokens(
+    userId: number,
+    rt: JwtPayloadWithRt,
+  ): Promise<TokensDto> {
     const user = await this.prisma.user.findUnique({
       where: {
         id: userId,
@@ -81,10 +83,10 @@ export class AuthService {
     });
     if (!user || !user.hashedRt) throw new ForbiddenException('Access Denied');
 
-    const rtMatches = await argon.verify(user.hashedRt, rt);
+    const rtMatches = await argon.verify(user.hashedRt, rt.refreshToken);
     if (!rtMatches) throw new ForbiddenException('Access Denied');
 
-    const tokens = await this.getTokens(user.id, user.email);
+    const tokens = await this.getTokens(user.id);
     await this.updateRtHash(user.id, tokens.refresh_token);
 
     return tokens;
@@ -102,19 +104,18 @@ export class AuthService {
     });
   }
 
-  async getTokens(userId: number, email: string): Promise<TokensDto> {
+  async getTokens(userId: number): Promise<TokensDto> {
     const jwtPayload: JwtPayload = {
       sub: userId,
-      email: email,
     };
 
     const [at, rt] = await Promise.all([
       this.jwtService.signAsync(jwtPayload, {
-        secret: this.config.get('AT_SECRET'),
+        secret: appConfig.AT_SECRET,
         expiresIn: '15m',
       }),
       this.jwtService.signAsync(jwtPayload, {
-        secret: this.config.get('RT_SECRET'),
+        secret: appConfig.RT_SECRET,
         expiresIn: '7d',
       }),
     ]);

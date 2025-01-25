@@ -1,13 +1,13 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '~/prisma/prisma.service';
 import {
-  BotPresetDto,
   ChangeEmailDto,
   ChangePasswordDto,
   CreateBotPresetDto,
   UpdateBotPresetDto,
 } from './dtos';
 import * as argon2 from 'argon2';
+import { BotPresetEntity } from './entities';
 
 @Injectable()
 export class UserService {
@@ -51,7 +51,7 @@ export class PresetsService {
   async create(
     userId: number,
     createBotPresetDto: CreateBotPresetDto,
-  ): Promise<BotPresetDto> {
+  ): Promise<BotPresetEntity> {
     return this.prisma.botPreset.create({
       data: {
         ...createBotPresetDto,
@@ -60,7 +60,7 @@ export class PresetsService {
     });
   }
 
-  async findAll(userId: number): Promise<BotPresetDto[]> {
+  async findAll(userId: number): Promise<BotPresetEntity[]> {
     return this.prisma.botPreset.findMany({
       where: { userId },
     });
@@ -70,7 +70,7 @@ export class PresetsService {
     userId: number,
     id: number,
     updateBotPresetDto: UpdateBotPresetDto,
-  ): Promise<BotPresetDto> {
+  ): Promise<BotPresetEntity> {
     return this.prisma.botPreset.update({
       where: { id, userId },
       data: updateBotPresetDto,
