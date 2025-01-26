@@ -5,6 +5,7 @@ import {
   ChangePasswordDto,
   CreateBotPresetDto,
   UpdateBotPresetDto,
+  UserDto,
 } from './dtos';
 import * as argon2 from 'argon2';
 import { BotPresetEntity } from './entities';
@@ -12,6 +13,22 @@ import { BotPresetEntity } from './entities';
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
+
+  async getMe(userId: number): Promise<UserDto> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      omit: {
+        hash: true,
+        hashedRt: true,
+      },
+    });
+
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    return user;
+  }
 
   async changeEmail(userId: number, changeEmailDto: ChangeEmailDto) {
     const existingUser = await this.prisma.user.findUnique({

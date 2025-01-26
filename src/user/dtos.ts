@@ -1,7 +1,19 @@
-import { Field, PickType, InputType } from '@nestjs/graphql';
+import {
+  Field,
+  PickType,
+  InputType,
+  ObjectType,
+  OmitType,
+} from '@nestjs/graphql';
 import { IsEmail, MinLength } from 'class-validator';
 import { User } from '@prisma/client';
-import { BotPresetEntity } from './entities';
+import { BotPresetEntity, UserEntity } from './entities';
+
+@ObjectType()
+export class UserDto extends OmitType(UserEntity, [
+  'hash',
+  'hashedRt',
+] as const) {}
 
 @InputType()
 export class ChangePasswordDto {

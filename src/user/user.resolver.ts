@@ -6,6 +6,7 @@ import {
   ChangePasswordDto,
   CreateBotPresetDto,
   UpdateBotPresetDto,
+  UserDto,
 } from './dtos';
 import { BotPresetEntity } from './entities';
 import { UseGuards } from '@nestjs/common';
@@ -14,6 +15,12 @@ import { AtGuard } from '~/common/guards';
 @Resolver()
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
+
+  @UseGuards(AtGuard)
+  @Query(() => String, { description: '[Requires Auth] Get full user info' })
+  async getMe(@GetUid() userId: number): Promise<UserDto> {
+    return this.userService.getMe(userId);
+  }
 
   @UseGuards(AtGuard)
   @Mutation(() => Boolean, { description: '[Requires Auth] Change user email' })
