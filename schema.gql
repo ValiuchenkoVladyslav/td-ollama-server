@@ -45,6 +45,9 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 scalar DateTime
 
 type Query {
+  """[Requires Auth] Get full user info"""
+  getMe: String!
+
   """[Requires Auth] Get all bot presets"""
   fetchPresets: [BotPresetEntity!]!
 }
