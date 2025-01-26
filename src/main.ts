@@ -13,8 +13,12 @@ async function bootstrap() {
   );
 
   app.setGlobalPrefix('api');
+
   app.enableCors();
+
   app.useGlobalPipes(new ValidationPipe());
+
+  app.enableShutdownHooks();
 
   await app.listen(process.env.PORT ?? 3000, process.env.HOST ?? 'localhost');
 }
