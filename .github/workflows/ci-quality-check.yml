@@ -1,0 +1,29 @@
+name: Check code quality
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check-linting:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - run: bun install
+
+      - name: Check eslint
+        run: bun lint:check
+
+      - name: Check prettier
+        run: bun format:check
