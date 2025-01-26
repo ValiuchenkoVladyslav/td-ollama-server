@@ -1,0 +1,22 @@
+# WARNING: DO NOT USE THIS FILE IN PROD
+# PORTS ARE EXPOSED FOR DEVELOPMENT PURPOSES
+
+name: td-ollama-server-dev
+
+services:
+  # APP service
+  app:
+    image: td-ollama-server:latest
+    restart: always
+
+    environment:
+      - AT_SECRET=at-secret
+      - RT_SECRET=rt-secret
+      - DATABASE_URL=file:./dev.db
+      - HOST=0.0.0.0
+
+    build:
+      context: ../../
+      dockerfile: ./.docker/dev/Dockerfile
+
+    ports: [3000:3000]
