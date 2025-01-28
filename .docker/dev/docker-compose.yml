@@ -3,16 +3,18 @@
 
 name: td-ollama-server-dev
 
+volumes:
+  pgdata:
+
 services:
   # APP service
   app:
     image: td-ollama-server:latest
-    restart: always
 
     environment:
       - AT_SECRET=at-secret
       - RT_SECRET=rt-secret
-      - DATABASE_URL=file:./dev.db
+      - DATABASE_URL=postgres://pg:pg@postgres:5432/pg
       - HOST=0.0.0.0
 
     build:
@@ -20,3 +22,17 @@ services:
       dockerfile: ./.docker/dev/Dockerfile
 
     ports: [3000:3000]
+
+  postgres:
+    image: postgres:17.2-alpine
+    shm_size: 128mb
+
+    ports: [5432:5432] # HIDE IN PROD
+
+    environment:
+      - POSTGRES_USER=pg
+      - POSTGRES_PASSWORD=pg
+      - POSTGRES_DB=pg
+
+    volumes: [pgdata:/var/lib/postgresql/data]
+
